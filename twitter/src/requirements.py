@@ -4,11 +4,11 @@ import os
 import sys
 
 # Try to import every requirements
-REQUIREMENTS: list[str] = []
+REQUIREMENTS: list[str] = ["spade", "requests"]
 EXIT_PROGRAM: bool = False
 for requirement in REQUIREMENTS:
 	try:
-		__import__(requirement) if requirement != "pillow" else __import__("PIL")
+		__import__(requirement)
 	except ImportError:
 		os.system(f"{sys.executable} -m pip install {requirement}")
 		EXIT_PROGRAM = True
