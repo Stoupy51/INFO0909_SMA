@@ -6,7 +6,7 @@ from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 from twscrape import API, Tweet, gather
 from typing import Iterable
-
+import json
 
 class CrawlerAgent(Agent):
 	class CrawlerBehaviour(OneShotBehaviour):
@@ -14,18 +14,30 @@ class CrawlerAgent(Agent):
 		async def on_start(self):
 			""" Setup the Twscrape API and connect the account """
 			self.api = API()
-			await self.api.pool.add_account(*CrawlerConfig.ACCOUNT)
-			await self.api.pool.login_all()
+			try:
+				await self.api.pool.add_account(*CrawlerConfig.ACCOUNT)
+				await self.api.pool.login_all()
+				info("[Crawler] Logged in to Twitter")
+			except Exception as e:
+				error(f"Error while logging in to Twitter: {e}")
 
 		async def run(self):
 			""" Main agent behaviour, search for tweets """
 			# Get the tweets
-			tweets: Iterable[Tweet] = await gather(self.api.search(CrawlerConfig.QUERY, limit=CrawlerConfig.MAX_TWEETS))
+			tweets: Iterable[Tweet] = await gather(self.api.search(
+				CrawlerConfig.QUERY,
+				limit=CrawlerConfig.MAX_TWEETS
+			))
+			tweets = list(tweets)
+			info(f"[Crawler] Scrapped {len(tweets)} tweets")
 
 			# Send the tweets one by one
 			for tweet in tweets:
-				await self.send(Message(to = Agents.CLEANER, body = f"{tweet.id},{tweet.rawContent}"))
-
+				json_body: str = json.dumps({"id": tweet.id, "content": tweet.rawContent})
+				await self.send(Message(to=Agents.CLEANER[0], body=json_body))
+				
+				# Debug message
+				debug(f"[Crawler] Sent tweet {tweet.id} to {Agents.CLEANER[0]}")
 
 	async def setup(self):
 		""" Agent initialization """

@@ -4,7 +4,7 @@ import os
 import sys
 
 # Try to import every requirements
-REQUIREMENTS: list[str] = ["spade", "requests"]
+REQUIREMENTS: list[str] = ["requests", "spade", "twscrape", "nltk", "textblob"]
 EXIT_PROGRAM: bool = False
 for requirement in REQUIREMENTS:
 	try:

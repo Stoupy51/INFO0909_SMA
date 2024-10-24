@@ -1,6 +1,7 @@
 
 ## Configuration file for the application
 from src.requirements import *
+from src.print import *
 import time
 import os
 
@@ -16,25 +17,34 @@ class CrawlerConfig():
 	ACCOUNT: list = ["info0909sma", "impossible51", "info0909sma@gmail.com", "impossible51"]
 	MAX_TWEETS: int = 1					# Maximum number of tweets for an agent	
 	QUERY: str = "gouvernement barnier"	# Query to search
-	LANG: str = "fr"					# Language
 
 # Cleaner config
 class CleanerConfig():
+	REMOVE_LINKS: bool = True			# Remove links
 	KEEP_SPECIAL_CHARS: bool = False	# Keep special characters
+	REMOVE_ACCENTS: bool = True			# Remove accents
 	LOWER_CASE: bool = True				# Apply lower case
-	STOPWORDS: bool = True				# Remove stopwords
+	STOPWORDS: bool = False				# Remove stopwords
 
+# Labeller config
+class LabellerConfig():
+	LABELS: dict[int, str] = {
+		1: "Tres negatif",
+		2: "Negatif",
+		3: "Neutre",
+		4: "Positif",
+		5: "Tres positif"
+	}
+
+# Database config
+class DatabaseConfig():
+	NEW_DATABASE_ON_START: bool = True	# Create a new database on start
+	FILE: str = f"{ROOT}/database.json"	# Database file
 
 # Spade config
-AGENTS: dict[tuple[str,str]] = {
-	"crawler":	("zahia_guess@pwned.life",	"zahia"),
-	"cleaner":	("Stoupy51@pwned.life",		"uwu"),
-	"database":	("agent801@pwned.life",		"cours801"),
-	"labeller":	(None, None),
-}
 class Agents():
 	CRAWLER: tuple[str,str] =	("zahia_guess@pwned.life",	"zahia")
-	CLEANER: tuple[str,str] =	("Stoupy51@pwned.life",		"uwu")
+	CLEANER: tuple[str,str] =	("Stoupy51@pwned.life",		"uwu64")
 	DATABASE: tuple[str,str] =	("agent801@pwned.life",		"cours801")
-	LABELLER: tuple[str,str] =	(None, None)
+	LABELLER: tuple[str,str] =	("label@pwned.life", 		"label")
 
