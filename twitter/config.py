@@ -13,7 +13,8 @@ ROOT: str = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")	# Root
 
 # Crawler config
 class CrawlerConfig():
-	MAX_TWEETS: int = 5					# Maximum number of tweets for an agent	
+	ACCOUNT: list = ["info0909sma", "impossible51", "info0909sma@gmail.com", "impossible51"]
+	MAX_TWEETS: int = 1					# Maximum number of tweets for an agent	
 	QUERY: str = "gouvernement barnier"	# Query to search
 	LANG: str = "fr"					# Language
 
@@ -31,4 +32,9 @@ AGENTS: dict[tuple[str,str]] = {
 	"database":	("agent801@pwned.life",		"cours801"),
 	"labeller":	(None, None),
 }
+class Agents():
+	CRAWLER: tuple[str,str] =	("zahia_guess@pwned.life",	"zahia")
+	CLEANER: tuple[str,str] =	("Stoupy51@pwned.life",		"uwu")
+	DATABASE: tuple[str,str] =	("agent801@pwned.life",		"cours801")
+	LABELLER: tuple[str,str] =	(None, None)
 

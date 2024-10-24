@@ -2,7 +2,8 @@
 # Imports
 from config import *
 from src.print import *
-from src.crawler import *
+from src.crawler_agent import *
+from src.cleaning_agent import *
 from spade import wait_until_finished, run as spade_run
 from spade.agent import Agent
 
@@ -14,9 +15,9 @@ def main():
 
 	# Create all the agents and start them.
 	instances: list[Agent] = [
-		CrawlerAgent(*AGENTS["crawler"]),
-		#CleanerAgent(*AGENTS["cleaner"]),
-		#DatabaseAgent(*AGENTS["database"]),
+		CrawlerAgent(*Agents.CRAWLER),
+		#CleanerAgent(*Agents.CLEANER),
+		#DatabaseAgent(*Agents.DATABASE),
 	]
 	for instance in instances:
 		instance.start()
