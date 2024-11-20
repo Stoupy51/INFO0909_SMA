@@ -36,6 +36,13 @@ class LabellerConfig():
 		5: "Tres positif"
 	}
 
+# SVM config
+class SVMConfig():
+	MAX_FEATURES: int = 1000        # Maximum number of features for TF-IDF
+	KERNEL: str = 'linear'          # Kernel type ('linear', 'rbf', 'poly', 'sigmoid')
+	TEST_SIZE: float = 0.2          # Test set size for train/test split
+	RANDOM_STATE: int = 42          # Random state for reproducibility
+
 # Database config
 class DatabaseConfig():
 	NEW_DATABASE_ON_START: bool = True	# Create a new database on start
@@ -47,4 +54,5 @@ class Agents():
 	CLEANER: tuple[str,str] =	("Stoupy51@pwned.life",		"uwu64")
 	DATABASE: tuple[str,str] =	("agent801@pwned.life",		"cours801")
 	LABELLER: tuple[str,str] =	("label@pwned.life", 		"label")
+	SVM: tuple[str,str] =		("svm@pwned.life",			"svm123")	# TODO: create the account
 

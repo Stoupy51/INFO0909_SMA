@@ -30,6 +30,12 @@ class DatabaseAgent(Agent):
 					if not self.db.get(tweet_id):
 						self.db[tweet_id] = json_dict
 						self.save_db()
+
+						# Send updated database to SVM agent
+						msg = Message(to=Agents.SVM[0])
+						msg.body = json.dumps(self.db)
+						await self.send(msg)
+
 			except Exception as e:
 				error(f"Error with request from {msg.sender}: {e}", exit=False)
 		
