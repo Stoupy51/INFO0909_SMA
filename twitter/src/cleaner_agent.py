@@ -24,6 +24,7 @@ class CleanerAgent(Agent):
 				# Si on reçoit un tweet -> on récupère le text
 				json_dict: dict = json.loads(msg.body)
 				content: str = json_dict["content"]
+				content = content.strip()
 				
 				# On enlève les liens
 				if CleanerConfig.REMOVE_LINKS:
@@ -33,18 +34,20 @@ class CleanerAgent(Agent):
 				if not CleanerConfig.KEEP_SPECIAL_CHARS:
 					for p in string.punctuation:
 						content = content.replace(p, " ")
-					while "  " in content:
-						content = content.replace("  ", " ")
+
+				# On enlève les doubles espaces
+				while "  " in content:
+					content = content.replace("  ", " ")
 				
-				# Remove accents
+				# On enlève les accents
 				if CleanerConfig.REMOVE_ACCENTS:
 					content = content.encode("ascii", "ignore").decode("ascii")
 
-				# Mettre les mots en minuscule
+				# On met les mots en minuscule
 				if CleanerConfig.LOWER_CASE:
 					content = content.lower()
 
-				# Eliminer les stop words (utilisez une liste de stop words existante, par exemple, celle fournie par NLTK)
+				# On enlève les stop words
 				if CleanerConfig.STOPWORDS:
 					stop_words = set(stopwords.words("french"))
 					content = " ".join(word for word in content.split(' ') if word not in stop_words)
