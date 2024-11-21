@@ -16,10 +16,11 @@ class DatabaseAgent(Agent):
 				with open(DatabaseConfig.FILE, "r") as f:
 					self.db = json.load(f)
 				info(f"Database loaded with {len(self.db)} tweets")
+			self.send_to_models: bool = False
 
 		async def run(self):
 			""" Main agent behaviour, receive cleaned tweets and store them in the database """
-			msg: Message = await self.receive(timeout=60)
+			msg: Message|None = await self.receive(timeout=10)
 			try:
 				if msg:
 					# Decode tweet
@@ -30,11 +31,14 @@ class DatabaseAgent(Agent):
 					if not self.db.get(tweet_id):
 						self.db[tweet_id] = json_dict
 						self.save_db()
+						self.send_to_models = True
 
-						# Send updated database to SVM agent
-						msg = Message(to=Agents.SVM[0])
-						msg.body = json.dumps(self.db)
-						await self.send(msg)
+				elif self.send_to_models:
+					# Send updated database to SVM agent
+					msg = Message(to=Agents.SVM[0])
+					msg.body = json.dumps(self.db)
+					await self.send(msg)
+					self.send_to_models = False
 
 			except Exception as e:
 				error(f"Error with request from {msg.sender}: {e}", exit=False)

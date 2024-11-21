@@ -5,6 +5,7 @@ from src.crawler_agent import *
 from src.cleaner_agent import *
 from src.labeller_agent import *
 from src.database_agent import *
+from src.svm_agent import *
 from spade import wait_until_finished, run as spade_run
 from spade.agent import Agent
 
@@ -20,6 +21,7 @@ async def main():
 		CleanerAgent(*Agents.CLEANER),
 		LabellerAgent(*Agents.LABELLER),
 		DatabaseAgent(*Agents.DATABASE),
+		SVMAgent(*Agents.SVM),
 	][::-1]
 	
 	for instance in instances:

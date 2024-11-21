@@ -54,5 +54,5 @@ class Agents():
 	CLEANER: tuple[str,str] =	("Stoupy51@pwned.life",		"uwu64")
 	DATABASE: tuple[str,str] =	("agent801@pwned.life",		"cours801")
 	LABELLER: tuple[str,str] =	("label@pwned.life", 		"label")
-	SVM: tuple[str,str] =		("svm@pwned.life",			"svm123")	# TODO: create the account
+	SVM: tuple[str,str] =		("svm123@pwned.life",		"svm123")
 
