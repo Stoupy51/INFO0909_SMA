@@ -45,7 +45,7 @@ class DatabaseAgent(Agent):
 		
 		def save_db(self):
 			with open(DatabaseConfig.FILE, "w", encoding="utf-8") as f:
-				json.dump(self.db, f, indent='\t')
+				json.dump(self.db, f, indent='\t', ensure_ascii=False)
 
 	async def setup(self):
 		""" Agent initialization """

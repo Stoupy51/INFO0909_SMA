@@ -28,12 +28,10 @@ class CleanerConfig():
 
 # Labeller config
 class LabellerConfig():
-	LABELS: dict[int, str] = {
-		1: "Tres negatif",
-		2: "Negatif",
-		3: "Neutre",
-		4: "Positif",
-		5: "Tres positif"
+	LABELS: dict[str, str] = {
+		"negative":	"Negatif",
+		"neutral":	"Neutre",
+		"positive":	"Positif"
 	}
 
 # SVM config

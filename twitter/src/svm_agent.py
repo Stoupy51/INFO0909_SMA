@@ -43,7 +43,7 @@ class SVMAgent(Agent):
 					
 					# Evaluate
 					accuracy = self.classifier.score(X_test_vec, y_test)
-					info(f"SVM Model trained with accuracy: {accuracy:.2f}")
+					info(f"SVM Model trained with accuracy: {accuracy:.3f}")
 
 			except Exception as e:
 				error(f"Error with request from {msg.sender}: {e}", exit=False)
