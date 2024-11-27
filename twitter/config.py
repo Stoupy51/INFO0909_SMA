@@ -21,8 +21,8 @@ class CrawlerConfig():
 # Cleaner config
 class CleanerConfig():
 	REMOVE_LINKS: bool = True			# Remove links
-	KEEP_SPECIAL_CHARS: bool = False	# Keep special characters
-	REMOVE_ACCENTS: bool = True			# Remove accents
+	KEEP_SPECIAL_CHARS: bool = True	# Keep special characters
+	REMOVE_ACCENTS: bool = False			# Remove accents
 	LOWER_CASE: bool = True				# Apply lower case
 	STOPWORDS: bool = False				# Remove stopwords
 
