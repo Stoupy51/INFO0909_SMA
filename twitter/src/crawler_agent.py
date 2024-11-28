@@ -33,8 +33,18 @@ class CrawlerAgent(Agent):
 
 			# Send the tweets one by one
 			for tweet in tweets:
-				json_body: str = json.dumps({"id": tweet.id, "content": tweet.rawContent})
-				await self.send(Message(to=Agents.CLEANER[0], body=json_body))
+				
+				# Ask database if the tweet is already in database
+				json_body: str = json.dumps({"id": tweet.id, "content": tweet.rawContent, "from_crawler": True})
+				await self.send(Message(to=Agents.DATABASE[0], body=json_body))
+
+				# If no, send it to the cleaner
+				msg: Message|None = await self.receive(timeout=10)
+				if msg and msg.body == "good":
+					json_body: str = json.dumps({"id": tweet.id, "content": tweet.rawContent})
+					await self.send(Message(to=Agents.CLEANER[0], body=json_body))
+				else:
+					warning(f"Tweet {tweet.id} already present")
 				
 				# Debug message
 				#debug(f"[Crawler] Sent tweet {tweet.id} to {Agents.CLEANER[0]}")

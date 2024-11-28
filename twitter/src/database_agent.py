@@ -27,8 +27,15 @@ class DatabaseAgent(Agent):
 					json_dict: dict = json.loads(msg.body)
 					tweet_id: str = str(json_dict.pop("id"))
 
+					# If from crawler, send back answer "good" if not in database
+					if json_dict.get("from_crawler"):
+						good: str = "good" if not self.db.get(tweet_id) else ""
+						reply = Message(to=str(msg.sender))
+						reply.body = good
+						await self.send(reply)
+
 					# Store tweet in the database if id is not already present
-					if not self.db.get(tweet_id):
+					elif not self.db.get(tweet_id):
 						self.db[tweet_id] = json_dict
 						self.save_db()
 						self.send_to_models = True
