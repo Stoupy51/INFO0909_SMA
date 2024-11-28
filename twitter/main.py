@@ -13,6 +13,7 @@ import threading
 
 # Main function
 @measure_time(info)
+@handle_error((KeyboardInterrupt,), error_log=1)
 async def main():
 
 	# Start the llama thread
