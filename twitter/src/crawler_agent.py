@@ -37,7 +37,7 @@ class CrawlerAgent(Agent):
 				await self.send(Message(to=Agents.CLEANER[0], body=json_body))
 				
 				# Debug message
-				debug(f"[Crawler] Sent tweet {tweet.id} to {Agents.CLEANER[0]}")
+				#debug(f"[Crawler] Sent tweet {tweet.id} to {Agents.CLEANER[0]}")
 
 	async def setup(self):
 		""" Agent initialization """

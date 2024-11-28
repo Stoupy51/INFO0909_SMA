@@ -15,14 +15,14 @@ ROOT: str = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")	# Root
 # Crawler config
 class CrawlerConfig():
 	ACCOUNT: list = ["info0909sma", "impossible51", "info0909sma@gmail.com", "impossible51"]
-	MAX_TWEETS: int = 1					# Maximum number of tweets for an agent	
+	MAX_TWEETS: int = 100					# Maximum number of tweets for an agent	
 	QUERY: str = "gouvernement barnier"	# Query to search
 
 # Cleaner config
 class CleanerConfig():
 	REMOVE_LINKS: bool = True			# Remove links
-	KEEP_SPECIAL_CHARS: bool = True	# Keep special characters
-	REMOVE_ACCENTS: bool = False			# Remove accents
+	KEEP_SPECIAL_CHARS: bool = False	# Keep special characters
+	REMOVE_ACCENTS: bool = True			# Remove accents
 	LOWER_CASE: bool = True				# Apply lower case
 	STOPWORDS: bool = False				# Remove stopwords
 
@@ -33,17 +33,23 @@ class LabellerConfig():
 		"neutral":	"Neutre",
 		"positive":	"Positif"
 	}
+	PROMPT: str = """
+Voici une phrase :
+"REPLACE"
+
+Répond juste "Positif" si la phrase est positive, "Négatif" si elle est négative, "Neutre" dans le cas contraire. SEULEMENT CES MOTS.
+"""
 
 # SVM config
 class SVMConfig():
 	MAX_FEATURES: int = 1000        # Maximum number of features for TF-IDF
 	KERNEL: str = 'linear'          # Kernel type ('linear', 'rbf', 'poly', 'sigmoid')
-	TEST_SIZE: float = 0.2          # Test set size for train/test split
+	TEST_SIZE: float = 1/3          # Test set size for train/test split
 	RANDOM_STATE: int = 42          # Random state for reproducibility
 
 # Database config
 class DatabaseConfig():
-	NEW_DATABASE_ON_START: bool = True	# Create a new database on start
+	NEW_DATABASE_ON_START: bool = False	# Create a new database on start
 	FILE: str = f"{ROOT}/database.json"	# Database file
 
 # Spade config

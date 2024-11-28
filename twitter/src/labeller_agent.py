@@ -11,7 +11,7 @@ class LabellerAgent(Agent):
 	class LabellerBehaviour(CyclicBehaviour):
 
 		async def on_start(self):
-			self.analyzer: Pipeline = pipeline("sentiment-analysis", model="ac0hik/Sentiment_Analysis_French", device=0)
+			self.analyzer: Pipeline = pipeline("sentiment-analysis", model="ac0hik/Sentiment_Analysis_French")
 	
 
 		async def run(self):
@@ -25,7 +25,7 @@ class LabellerAgent(Agent):
 
 					# Analyze the content to get the label number
 					analysis: dict = self.analyzer(content)	# [{'label': 'negative', 'score': 0.9996980423927307}]
-					debug(f"Analysis: {analysis}")
+					#debug(f"Analysis: {analysis}")
 					label: str = analysis[0]["label"]		# 'negative'
 
 					# Get the sentiment out of the label

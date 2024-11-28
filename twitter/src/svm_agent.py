@@ -23,6 +23,7 @@ class SVMAgent(Agent):
 			try:
 				if msg:
 					# Decode database
+					debug(f"SVM: Receiving database...")
 					database: dict[str, dict[str, str]] = json.loads(msg.body)
 					
 					# Prepare data for training
@@ -39,6 +40,7 @@ class SVMAgent(Agent):
 					X_test_vec = self.vectorizer.transform(X_test)
 					
 					# Train the model
+					debug(f"SVM: Started training with ({len(X_train_vec)}, {len(X_test_vec)})")
 					self.classifier.fit(X_train_vec, y_train)
 					
 					# Evaluate

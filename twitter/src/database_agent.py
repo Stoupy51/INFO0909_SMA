@@ -25,7 +25,7 @@ class DatabaseAgent(Agent):
 				if msg:
 					# Decode tweet
 					json_dict: dict = json.loads(msg.body)
-					tweet_id: str = json_dict.pop("id")
+					tweet_id: str = str(json_dict.pop("id"))
 
 					# Store tweet in the database if id is not already present
 					if not self.db.get(tweet_id):

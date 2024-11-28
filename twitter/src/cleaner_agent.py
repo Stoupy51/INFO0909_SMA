@@ -51,7 +51,7 @@ class CleanerAgent(Agent):
 				if CleanerConfig.STOPWORDS:
 					stop_words = set(stopwords.words("french"))
 					content = " ".join(word for word in content.split(' ') if word not in stop_words)
-				json_dict["content"] = content
+				json_dict["content"] = content.strip()
 				
 				# Envoyer le message à la database
 				await self.send(Message(to=Agents.LABELLER[0], body=json.dumps(json_dict)))
