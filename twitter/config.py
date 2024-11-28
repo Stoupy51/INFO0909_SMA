@@ -33,11 +33,14 @@ class LabellerConfig():
 		"neutral":	"Neutre",
 		"positive":	"Positif"
 	}
+	API_URL: str = "http://localhost:11434/api/generate"
+	MODEL: str = "llama3.2"	# https://ollama.com/download/OllamaSetup.exe
 	PROMPT: str = """
 Voici une phrase :
 "REPLACE"
 
-Répond juste "Positif" si la phrase est positive, "Négatif" si elle est négative, "Neutre" dans le cas contraire. SEULEMENT CES MOTS.
+Répond juste "positive" si la phrase est positive, "negative" si elle est négative, "neutral" dans le cas contraire.
+SEULEMENT CES MOTS !
 """
 
 # SVM config

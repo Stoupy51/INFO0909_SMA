@@ -8,6 +8,8 @@ import json
 from sklearn.svm import SVC
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
+from imblearn.under_sampling import RandomUnderSampler
+from collections import Counter
 
 class SVMAgent(Agent):
 	class SVMBehaviour(CyclicBehaviour):
@@ -30,10 +32,29 @@ class SVMAgent(Agent):
 					texts = [tweet['content'] for tweet in database.values()]
 					labels = [self.label_mapping[tweet['sentiment']] for tweet in database.values()]
 					
+					# Analysis of the distribution of the labels
+					label_counts = Counter(labels)
+					info(label_counts)
+					# Balance the dataset
+					rus = RandomUnderSampler(random_state=SVMConfig.RANDOM_STATE)
+					texts_resampled, labels = rus.fit_resample(
+						[[text] for text in texts], labels
+					)
+					texts = [text[0] for text in texts_resampled]
+					# Analysis of the distribution of the labels (should be 50/50)
+					label_counts = Counter(labels)
+					info(label_counts)
+
 					# Split into train/test sets
 					X_train, X_test, y_train, y_test = train_test_split(
-						texts, labels, test_size=SVMConfig.TEST_SIZE, random_state=SVMConfig.RANDOM_STATE
+						texts, labels, test_size=SVMConfig.TEST_SIZE, random_state=SVMConfig.RANDOM_STATE,
+						stratify=labels
 					)
+					#Analysis distribution(labels)
+					label_counts = Counter(y_train)
+					info(f"y_train: {label_counts}")
+					label_counts = Counter(y_test)
+					info(f"y_test: {label_counts}")
 					
 					# Transform text data
 					X_train_vec = self.vectorizer.fit_transform(X_train)

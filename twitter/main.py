@@ -6,14 +6,18 @@ from src.cleaner_agent import *
 from src.labeller_agent import *
 from src.database_agent import *
 from src.svm_agent import *
+from src.llama import background_llama
 from spade import wait_until_finished, run as spade_run
 from spade.agent import Agent
+import threading
 
 # Main function
+@measure_time(info)
 async def main():
 
-	# Print the start time
-	info(f"Start time: {START_TIME_STR}")
+	# Start the llama thread
+	llama_thread = threading.Thread(target=background_llama)
+	llama_thread.start()
 
 	# Create all the agents and start them.
 	instances: list[Agent] = [
