@@ -11,11 +11,11 @@
 ## 🏗️ Architecture
 Le système est composé de 5 agents qui communiquent entre eux :
 
-1. **CrawlerAgent**: 🔍 Collecte les tweets via l'API Twitter (twscrape), puis les envoie au **CleanerAgent** si les tweets ne sont pas déjà dans la base de données.
+1. **CrawlerAgent**: 🔍 Collecte les tweets via l'API Twitter [(twscrape)](https://pypi.org/project/twscrape/), puis les envoie au **CleanerAgent** si les tweets ne sont pas déjà dans la base de données.
 2. **CleanerAgent**: 🧹 Nettoie et prétraite les tweets selon les options choisies, puis l'envoie au **LabellerAgent**
-3. **LabellerAgent**: 🤔 Analyse le sentiment des tweets via un modèle LLM (Llama), puis l'envoie au **DatabaseAgent**
+3. **LabellerAgent**: 🤔 Analyse le sentiment des tweets via un modèle LLM [(Llama)](https://ollama.com/), puis l'envoie au **DatabaseAgent**
 4. **DatabaseAgent**: 💾 Stocke les résultats dans une base de données JSON. Si aucun tweet n'a été reçu en 10 secondes, l'agent **SVMAgent** est notifié.
-5. **SVMAgent**: 📊 Entraine un SVM sur les tweets analysés et les labels associés. Puis affiche l'accuracy du modèle.
+5. **SVMAgent**: 📊 Entraine un [SVM](https://scikit-learn.org/stable/modules/svm.html) sur les tweets analysés et les labels associés. Puis affiche l'accuracy du modèle.
 
 
 ## ⚙️ Configuration
@@ -31,9 +31,11 @@ La configuration du système se fait via le fichier `config.py` qui contient plu
 
 ## 📋 Prérequis
 - Python 3.8 ou plus 🐍
-- Ollama (pour le modèle LLM) 🦙
+- [Ollama (pour le modèle LLM)](https://ollama.com/) 🦙
 
-## 🚀 Installation
+## 🚀 Installation & Démarrage
 
 1. 📥 Cloner le repository (`git clone https://github.com/Stoupy51/INFO0909_SMA` par exemple)
-2. 📦 Installer les dépendances (`pip install -r requirements.txt`, ou juste `python main.py` qui installera les dépendances manquantes)
+2. 📦 Installer les dépendances (`pip install -r requirements.txt`: optionnel, le main.py installera les dépendances manquantes)
+3. 🚀 Démarrer le système avec `python main.py`
+
