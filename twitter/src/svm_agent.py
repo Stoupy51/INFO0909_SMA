@@ -61,7 +61,7 @@ class SVMAgent(Agent):
 					X_test_vec = self.vectorizer.transform(X_test)
 					
 					# Train the model
-					debug(f"SVM: Started training with ({len(X_train_vec)}, {len(X_test_vec)})")
+					debug(f"SVM: Started training with ({X_train_vec.shape}, {X_test_vec.shape})")
 					self.classifier.fit(X_train_vec, y_train)
 					
 					# Evaluate

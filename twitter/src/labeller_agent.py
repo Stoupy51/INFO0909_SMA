@@ -44,7 +44,7 @@ class LabellerAgent(Agent):
 						response_data = response.json()
 						label = response_data["response"].lower()
 						label = "".join(x for x in label if x in "abcedfghijklmnopqrstuvwxyz")
-						suggestion(f"Response: {label}")
+						debug(f"Response: {label} for '{content[:10]}...'")
 						if label not in LabellerConfig.LABELS:
 							error(f"Response: {label}", exit=False)
 							label = LabellerConfig.LABELS["neutral"]

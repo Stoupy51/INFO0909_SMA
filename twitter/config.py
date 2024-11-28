@@ -15,7 +15,7 @@ ROOT: str = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")	# Root
 # Crawler config
 class CrawlerConfig():
 	ACCOUNT: list = ["info0909sma", "impossible51", "info0909sma@gmail.com", "impossible51"]
-	MAX_TWEETS: int = 100					# Maximum number of tweets for an agent	
+	MAX_TWEETS: int = 1					# Maximum number of tweets for an agent	
 	QUERY: str = "gouvernement barnier"	# Query to search
 
 # Cleaner config
