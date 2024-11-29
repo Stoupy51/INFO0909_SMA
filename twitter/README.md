@@ -8,6 +8,18 @@
 - [Axelle GARRAT](https://github.com/akselZ)
 
 
+## 📋 Prérequis
+- Python 3.8 ou plus 🐍
+- [Ollama (pour le modèle LLM)](https://ollama.com/) 🦙
+
+
+## 🚀 Installation & Démarrage
+
+1. 📥 Cloner le repository (`git clone https://github.com/Stoupy51/INFO0909_SMA` par exemple)
+2. 📦 Installer les dépendances (`pip install -r requirements.txt`: optionnel, le main.py installera les dépendances manquantes)
+3. 🚀 Démarrer le système avec `python main.py`
+
+
 ## 🏗️ Architecture
 Le système est composé de 5 agents qui communiquent entre eux :
 
@@ -28,14 +40,4 @@ La configuration du système se fait via le fichier `config.py` qui contient plu
 - `DatabaseConfig`: 💽 Configuration de la base de données `(création d'une nouvelle base au démarrage, fichier)`
 - `Agents`: 🔑 Identifiants et mots de passe des agents SPADE `(crawler, cleaner, database, labeller, svm)`
 
-
-## 📋 Prérequis
-- Python 3.8 ou plus 🐍
-- [Ollama (pour le modèle LLM)](https://ollama.com/) 🦙
-
-## 🚀 Installation & Démarrage
-
-1. 📥 Cloner le repository (`git clone https://github.com/Stoupy51/INFO0909_SMA` par exemple)
-2. 📦 Installer les dépendances (`pip install -r requirements.txt`: optionnel, le main.py installera les dépendances manquantes)
-3. 🚀 Démarrer le système avec `python main.py`
 
