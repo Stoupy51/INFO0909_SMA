@@ -5,7 +5,7 @@ import sys
 
 # Try to import every requirements
 REQUIREMENTS: dict[str, str] = {
-	"autogen": "autogen-core==0.4.0.dev11",
+	"autogen_core": "autogen-core==0.4.0.dev11",
 }
 
 exit_program: bool = False
