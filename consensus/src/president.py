@@ -25,7 +25,7 @@ class PresidentAgent(BaseAgent):
                 await self.send_message(self.msg, AgentId(agt, "default"))
  
             # Load dataset
-            self.dataset = pd.read_excel(DATASET)
+            self.dataset = pd.read_csv(DATASET)
 
             # Envoie de la première ligne (features)
             first_line = self.dataset.iloc[0][:-1]
