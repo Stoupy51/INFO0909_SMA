@@ -2,31 +2,36 @@
 # Imports
 from config import *
 from src.president import *
-from src.SVM import *
-from src.randomForest import *
-from src.gaussianNB import *
+from src.Ollama import *
+from src.BERT import *
 from autogen_core import SingleThreadedAgentRuntime, AgentId
+from typing import Type
 import pandas as pd
+import stouputils as stp
+
+async def register_agent(runtime, agent_class: Type[BaseAgent]):
+    await agent_class.register(runtime, agent_class.__name__, lambda: agent_class())
 
 # Main function
-@measure_time(progress)
-@handle_error((KeyboardInterrupt,), error_log=0)
+@stp.handle_error(KeyboardInterrupt, error_log=0)
 async def main():
 	runtime = SingleThreadedAgentRuntime()
-	await PresidentAgent.register(runtime, "President", lambda: PresidentAgent())
-	await SVMAgent.register(runtime, "SVM", lambda: SVMAgent())
-	await RFAgent.register(runtime, "RandomForest", lambda: RFAgent())
-	await NBAgent.register(runtime, "GaussianNB", lambda: NBAgent())
-	agents: list[str] = ["SVM", "RandomForest", "GaussianNB"]
+	await register_agent(runtime, PresidentAgent)
+	await register_agent(runtime, Ollama)
+	await register_agent(runtime, Bert)
+	agents: list[str] = ["Ollama", "Bert"]
 	
 	runtime.start()
+	await runtime.send_message(Message("start", data=json.dumps(agents)), AgentId("PresidentAgent", "default"))
 
-	test_message = Message(content="Hello, Agent!", data=json.dumps({"request":"Hello, Agent!"}))
-	await runtime.send_message(test_message, AgentId("SVM", "default"))
-	await runtime.send_message(test_message, AgentId("RandomForest", "default"))
-	await runtime.send_message(test_message, AgentId("GaussianNB", "default"))
+	# Vote majoritaire
+	pass
 
-	await runtime.send_message(Message("start", data=json.dumps(agents)), AgentId("President", "default"))
+	# le Borda
+	pass
+
+	# PAXOS
+	pass
 
 	await runtime.stop()
 	return

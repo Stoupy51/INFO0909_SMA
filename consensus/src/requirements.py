@@ -5,7 +5,10 @@ import sys
 
 # Try to import every requirements
 REQUIREMENTS: dict[str, str] = {
+	"stouputils": None,
 	"autogen_core": "autogen-core==0.4.0.dev11",
+	"transformers": None,
+	"torch": None,
 }
 
 exit_program: bool = False

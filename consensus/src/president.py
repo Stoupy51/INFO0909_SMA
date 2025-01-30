@@ -1,42 +1,36 @@
 
 # Imports
 from config import *
-from src.print import *
 from autogen_core import MessageContext, BaseAgent, AgentId
+import stouputils as stp
 import pandas as pd
 
-
+# Class
 class PresidentAgent(BaseAgent):
     def __init__(self) -> None:
-        super().__init__("PresidentAgent")
+        super().__init__(self.__class__.__name__)
         self.propositions: list = []
         self.agents: list[str] = []
-        self.msg: Message = Message(origin="President")
+        self.msg: Message = Message(origin=self.__class__.__name__)
 
     async def on_message_impl(self, message: Message, ctx: MessageContext) -> None:
-        info(f"President Received message: {message.content}")
+        stp.info(f"President Received message: {message.content}")
         data: list|dict = json.loads(message.data)
 
         if message.content == "start":
             self.agents = data
-            debug(self.agents)
-            self.msg.content = "Je suis votre président"
-            for agt in self.agents:
-                await self.send_message(self.msg, AgentId(agt, "default"))
+            stp.debug(self.agents)
  
             # Load dataset
             self.dataset = pd.read_csv(DATASET)
 
-            # Envoie de la première ligne (features)
-            first_line = self.dataset.iloc[0][:-1]
-            self.msg.content = ""
-            self.msg.data = json.dumps(first_line)
+            # Envoie du premier prompt
+            self.msg.content = self.dataset.iloc[0][0]
             for agt in self.agents:
                 await self.send_message(self.msg, AgentId(agt, "default"))
         else:
-            pass
-
-
             data = json.loads(message.data)
             if data.get("request") == "":
                 pass
+
+
