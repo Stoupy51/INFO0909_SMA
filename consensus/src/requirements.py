@@ -7,6 +7,7 @@ import sys
 REQUIREMENTS: dict[str, str] = {
 	"stouputils": None,
 	"autogen_core": "autogen-core==0.4.0.dev11",
+	"accelerate": None,
 	"transformers": None,
 	"torch": None,
 }

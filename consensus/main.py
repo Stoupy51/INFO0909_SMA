@@ -22,16 +22,24 @@ async def main():
 	agents: list[str] = ["Ollama", "Bert"]
 	
 	runtime.start()
-	await runtime.send_message(Message("start", data=json.dumps(agents)), AgentId("PresidentAgent", "default"))
+	presi = AgentId("PresidentAgent", "default")
+	await runtime.send_message(Message("register", data=json.dumps(agents)), presi)
+
+	# Load dataset
+	dataset = pd.read_csv(DATASET)
+	text = dataset.iloc[0][0]
 
 	# Vote majoritaire
-	pass
+	stp.progress("Lancement du vote majoritaire")
+	await runtime.send_message(Message(text, data='{"request":"majoritaire"}'), presi)
 
 	# le Borda
-	pass
+	stp.progress("Lancement du vote Borda")
+	await runtime.send_message(Message(text, data='{"request":"borda"}'), presi)
 
 	# PAXOS
-	pass
+	stp.progress("Lancement du vote PAXOS")
+	await runtime.send_message(Message(text, data='{"request":"paxos"}'), presi)
 
 	await runtime.stop()
 	return
