@@ -1,11 +1,9 @@
 
 # Imports
-import pandas as pd
-import numpy as np
+import json
 import stouputils as stp
 from config import *
 from autogen_core import MessageContext, BaseAgent
-import requests
 import random
 
 # Class
@@ -23,19 +21,20 @@ class AgentRandom(BaseAgent):
         vote: str = json.loads(message.data).get("request")
 
         if vote == "majoritaire":
-            decision = random.choice([1, 0])
-            msg = Message(decision, origin=self.__class__.__name__)
-        if vote == "borda":
-            liste_candidats = ["ai", "human"]
+            decision: int = random.choice([1, 0])
+            self.msg.content = str(decision)
+ 
+        elif vote == "borda":
+            liste_candidats: list[str] = ["ai", "human"]
             random.shuffle(liste_candidats)
-            nb_points = len(liste_candidats)
-            text = ""
+            nb_points: int = len(liste_candidats)
+            text: str = ""
             for candidat in liste_candidats:
                 text += candidat + " " + str(nb_points) + ","
                 nb_points -= 1
-            msg = Message(text, origin=self.__class__.__name__)
+            self.msg.content = text
 
         # Send back
-        await self.send_message(msg, ctx.sender)
+        await self.send_message(self.msg, ctx.sender)    # type: ignore
         
 
