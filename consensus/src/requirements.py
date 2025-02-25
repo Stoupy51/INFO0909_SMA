@@ -4,12 +4,14 @@ import os
 import sys
 
 # Try to import every requirements
-REQUIREMENTS: dict[str, str] = {
+REQUIREMENTS: dict[str, str | None] = {
 	"stouputils": None,
 	"autogen_core": "autogen-core==0.4.0.dev11",
 	"accelerate": None,
 	"transformers": None,
 	"torch": None,
+	"pandas": None,
+	"sklearn": "scikit-learn"
 }
 
 exit_program: bool = False

@@ -1,10 +1,10 @@
 
 # Imports
 from config import *
+from typing import Any
 from autogen_core import MessageContext, BaseAgent, AgentId
 import stouputils as stp
-import pandas as pd
-from typing import Any
+import json
 
 # Class
 class PresidentAgent(BaseAgent):
@@ -18,7 +18,6 @@ class PresidentAgent(BaseAgent):
 
     async def on_message_impl(self, message: Message, ctx: MessageContext) -> None:
         stp.info(f"President Received message from '{message.origin}', content: '{str(message.content)[:25]}'")
-        data: list|dict = json.loads(message.data)
 
         # Si c'est une réponse, on enregistre
         if message.origin in self.agents:
@@ -26,10 +25,12 @@ class PresidentAgent(BaseAgent):
 
         # Sinon, message de la fonction main
         elif message.content == "register":
-            self.agents += data
+            data_list: list = json.loads(message.data)
+            self.agents += data_list
         else:
+            data_dict: dict = json.loads(message.data)
             # Si vote majoritaire, on lance
-            if data.get("request") == "majoritaire":
+            if data_dict.get("request") == "majoritaire":
 
                 # Si le vote n'est pas démarré, on envoie à tout le monde
                 if not self.is_voting:
@@ -50,10 +51,10 @@ class PresidentAgent(BaseAgent):
 
                     
 
-            elif data.get("request") == "borda":
+            elif data_dict.get("request") == "borda":
                 pass
 
-            elif data.get("request") == "paxos":
+            elif data_dict.get("request") == "paxos":
                 pass
 
 

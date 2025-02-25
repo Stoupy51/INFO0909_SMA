@@ -1,11 +1,10 @@
 
 # Imports
-import pandas as pd
-import numpy as np
-import stouputils as stp
 from config import *
-from autogen_core import MessageContext, BaseAgent
+import stouputils as stp
 import requests
+import json
+from autogen_core import MessageContext, BaseAgent
 
 # Class
 class Ollama(BaseAgent):
@@ -44,10 +43,10 @@ class Ollama(BaseAgent):
         if vote == "majoritaire":
             label = "".join(x for x in label if x in "abcedfghijklmnopqrstuvwxyz")
             # Get the label result
-            labels: dict[str, str] = {"yes": "1", "no": "0", "oui": 1, "non": 0}
-            msg = Message(labels[label])
+            labels: dict[str, str] = {"yes": "1", "no": "0", "oui": "1", "non": "0"}
+            self.msg.content = labels[label]
 
         # Send back
-        await self.send_message(msg, ctx.sender)
+        await self.send_message(self.msg, ctx.sender)
         
 
