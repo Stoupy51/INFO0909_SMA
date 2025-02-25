@@ -23,7 +23,7 @@ async def main():
 	await register_agent(runtime, PresidentAgent)
 
 	agents: list[str] = [
-		#await register_agent(runtime, Ollama),
+		await register_agent(runtime, Ollama),
 		await register_agent(runtime, AgentRandom),
 		await register_agent(runtime, Bert)
 	]
