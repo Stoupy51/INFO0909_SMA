@@ -4,6 +4,7 @@ from config import *
 from src.president import *
 from src.Ollama import *
 from src.BERT import *
+from src.AgentRandom import *
 from autogen_core import SingleThreadedAgentRuntime, AgentId
 from typing import Type
 import pandas as pd
@@ -18,8 +19,9 @@ async def main():
 	runtime = SingleThreadedAgentRuntime()
 	await register_agent(runtime, PresidentAgent)
 	await register_agent(runtime, Ollama)
-	await register_agent(runtime, Bert)
-	agents: list[str] = ["Ollama", "Bert"]
+	await register_agent(runtime, AgentRandom)
+	# await register_agent(runtime, Bert)
+	agents: list[str] = ["Ollama", "AgentRandom"]#, "Bert"]
 	
 	runtime.start()
 	presi = AgentId("PresidentAgent", "default")
@@ -32,14 +34,17 @@ async def main():
 	# Vote majoritaire
 	stp.progress("Lancement du vote majoritaire")
 	await runtime.send_message(Message(text, data='{"request":"majoritaire"}'), presi)
+	await runtime.send_message(Message("fin", data='{"request":"majoritaire"}'), presi)
 
 	# le Borda
 	stp.progress("Lancement du vote Borda")
 	await runtime.send_message(Message(text, data='{"request":"borda"}'), presi)
+	await runtime.send_message(Message("fin", data='{"request":"borda"}'), presi)
 
 	# PAXOS
 	stp.progress("Lancement du vote PAXOS")
 	await runtime.send_message(Message(text, data='{"request":"paxos"}'), presi)
+	await runtime.send_message(Message("fin", data='{"request":"paxos"}'), presi)
 
 	await runtime.stop()
 	return
