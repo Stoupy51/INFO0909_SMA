@@ -10,16 +10,18 @@ import pandas as pd
 import stouputils as stp
 
 async def register_agent(runtime, agent_class: Type[BaseAgent]):
-    await agent_class.register(runtime, agent_class.__name__, lambda: agent_class())
+    await agent_class.register(runtime, agent_class.__name__, lambda: agent_class())	# type: ignore
 
 # Main function
-@stp.handle_error(KeyboardInterrupt, error_log=0)
+@stp.measure_time()
+@stp.handle_error(KeyboardInterrupt, error_log=stp.LogLevels.NONE)
 async def main():
 	runtime = SingleThreadedAgentRuntime()
 	await register_agent(runtime, PresidentAgent)
-	await register_agent(runtime, Ollama)
+	#await register_agent(runtime, Ollama)
 	await register_agent(runtime, Bert)
 	agents: list[str] = ["Ollama", "Bert"]
+	agents = ["Bert"]
 	
 	runtime.start()
 	presi = AgentId("PresidentAgent", "default")

@@ -1,0 +1,16 @@
+[project]
+name = "consensus"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "accelerate>=1.4.0",
+    "autogen-core==0.4.0.dev11",
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.1",
+    "stouputils>=1.0.20",
+    "torch>=2.6.0",
+    "transformers>=4.49.0",
+]
