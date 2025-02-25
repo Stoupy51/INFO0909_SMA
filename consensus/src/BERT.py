@@ -9,6 +9,7 @@ from transformers import BertTokenizer, BertForSequenceClassification, Trainer, 
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from autogen_core import MessageContext, BaseAgent
+import os
 
 class TextDataset(Dataset):
     def __init__(self, encodings: BatchEncoding, labels: list):
@@ -28,64 +29,77 @@ class Bert(BaseAgent):
     def __init__(self) -> None:
         super().__init__(self.__class__.__name__)
         self.msg: Message = Message(origin=self.__class__.__name__)
-        with stp.Muffle(mute_stderr=True):
+        self.model_path: str = f"{ROOT}/models/bert.pth"
+        
+        # Try to load existing model
+        try:
+            with stp.Muffle(mute_stderr=True):
+                self.tokenizer: BertTokenizer = BertTokenizer.from_pretrained("bert-base-uncased", use_auth_token=False)
+                self.model: BertForSequenceClassification = BertForSequenceClassification.from_pretrained(self.model_path)
+                stp.info("Loaded existing model")
+        except:
+            stp.info("No existing model found, training new model...")
+            with stp.Muffle(mute_stderr=True):
+                # Chargement du dataset
+                data: pd.DataFrame = pd.read_csv(DATASET)
+                data["label"] = data["label"].astype(int)
+                data = data.iloc[:1000] # Trop long donc on test avec moins de lignes
 
-            # Chargement du dataset
-            data: pd.DataFrame = pd.read_csv(DATASET)
-            data["label"] = data["label"].astype(int)
-            data = data.iloc[:100] # Trop long donc on test avec moins de lignes
+                # Séparer les données en train/test
+                train_texts, val_texts, train_labels, val_labels = train_test_split(
+                    data["prompt"].tolist(),
+                    data["label"].tolist(),
+                    test_size=0.2,
+                    random_state=42
+                )
 
-            # Séparer les données en train/test
-            train_texts, val_texts, train_labels, val_labels = train_test_split(
-                data["prompt"].tolist(),
-                data["label"].tolist(),
-                test_size=0.2,
-                random_state=42
+                # Charger le tokenizer BERT
+                self.tokenizer: BertTokenizer = BertTokenizer.from_pretrained("bert-base-uncased", use_auth_token=False)
+
+                # Tokenization
+                train_encodings: BatchEncoding = self.tokenizer(train_texts, truncation=True, padding=True, max_length=512)
+                val_encodings: BatchEncoding = self.tokenizer(val_texts, truncation=True, padding=True, max_length=512)
+
+                # Création des datasets
+                train_dataset: TextDataset = TextDataset(train_encodings, train_labels)
+                val_dataset: TextDataset = TextDataset(val_encodings, val_labels)
+
+                self.model: BertForSequenceClassification = BertForSequenceClassification.from_pretrained(
+                    "bert-base-uncased",
+                    num_labels=len(set(data["label"])),
+                    use_auth_token=False
+                )
+
+            # Training
+            os.environ["WANDB_DISABLED"] = "true"   # Désactiver le suivi des expériences
+            training_args: TrainingArguments = TrainingArguments(
+                output_dir="./results",
+                eval_strategy="epoch",
+                per_device_train_batch_size=8,
+                per_device_eval_batch_size=8,
+                num_train_epochs=3,
+                save_strategy="epoch",
+                save_total_limit=2,
+                logging_dir="./logs",
+                logging_strategy="steps",  # Log à intervalles réguliers
+                logging_steps=10,  # Affiche une sortie toutes les 10 étapes
             )
 
-            # Charger le tokenizer BERT
-            self.tokenizer: BertTokenizer = BertTokenizer.from_pretrained("bert-base-uncased", use_auth_token=False)
-
-            # Tokenization
-            train_encodings: BatchEncoding = self.tokenizer(train_texts, truncation=True, padding=True, max_length=512)
-            val_encodings: BatchEncoding = self.tokenizer(val_texts, truncation=True, padding=True, max_length=512)
-
-            # Création des datasets
-            train_dataset: TextDataset = TextDataset(train_encodings, train_labels)
-            val_dataset: TextDataset = TextDataset(val_encodings, val_labels)
-
-            self.model: BertForSequenceClassification = BertForSequenceClassification.from_pretrained(
-                "bert-base-uncased",
-                num_labels=len(set(data["label"])),
-                use_auth_token=False
+            self.trainer: Trainer = Trainer(
+                model=self.model,
+                args=training_args,
+                train_dataset=train_dataset,
+                eval_dataset=val_dataset,
             )
 
-        # Training
-        os.environ["WANDB_DISABLED"] = "true"   # Désactiver le suivi des expériences
-        training_args: TrainingArguments = TrainingArguments(
-            output_dir="./results",
-            eval_strategy="epoch",
-            per_device_train_batch_size=8,
-            per_device_eval_batch_size=8,
-            num_train_epochs=3,
-            save_strategy="epoch",
-            save_total_limit=2,
-            logging_dir="./logs",
-            logging_strategy="steps",  # Log à intervalles réguliers
-            logging_steps=10,  # Affiche une sortie toutes les 10 étapes
-        )
+            self.trainer.train()
 
-        self.trainer: Trainer = Trainer(
-            model=self.model,
-            args=training_args,
-            train_dataset=train_dataset,
-            eval_dataset=val_dataset,
-        )
-
-        self.trainer.train()
-
-        results: dict = self.trainer.evaluate()
-        stp.info(results)
+            results: dict = self.trainer.evaluate()
+            stp.info(results)
+            
+            # Save the model
+            self.model.save_pretrained(self.model_path)
+            stp.info(f"Model saved to {self.model_path}")
 
         # Détecter si un GPU est disponible
         self.device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
