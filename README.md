@@ -9,6 +9,9 @@
 ## 📊 Analyse de Sentiments Twitter
 Veuillez consulter le [README principal](twitter/README.md) pour plus d'informations.
 
+## 👨‍💼 Consensus
+Veuillez consulter le [README principal](consensus/README.md) pour plus d'informations.
+
 ## 🚧 Autres Projets
 À venir... (ou pas)
 
