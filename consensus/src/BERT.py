@@ -46,8 +46,8 @@ class Bert(BaseAgent):
 
                 # Séparer les données en train/test
                 train_texts, val_texts, train_labels, val_labels = train_test_split(
-                    data["prompt"].tolist(),
-                    data["label"].tolist(),
+                    data.iloc[:, 0].tolist(),
+                    data.iloc[:, 1].tolist(),
                     test_size=0.2,
                     random_state=42
                 )
