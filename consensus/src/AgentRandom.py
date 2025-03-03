@@ -17,9 +17,10 @@ class AgentRandom(BaseAgent):
         # Load dataset for reputation initialization
         data: pd.DataFrame = pd.read_csv(DATASET)
         data["generated"] = data["generated"].astype(int)
+        data = data.head(100)  # Only keep first 100 rows
         
         # Initialize reputation with this data
-        stp.info("Initializing Random Agent reputation with 20% of data...")
+        stp.info("Initializing Random Agent reputation...")
         for _, row in data.iterrows():
             true_class = "ai" if row[1] == 1 else "human"
             predicted_class = random.choice(["human", "ai"])

@@ -7,6 +7,7 @@ import json
 from autogen_core import MessageContext, BaseAgent
 from src.reputation import Reputation
 import pandas as pd
+from tqdm import tqdm
 
 # Class
 class Ollama(BaseAgent):
@@ -18,10 +19,11 @@ class Ollama(BaseAgent):
         # Load dataset for reputation initialization
         data: pd.DataFrame = pd.read_csv(DATASET)
         data["generated"] = data["generated"].astype(int)
+        data = data.head(100)  # Only keep first 100 rows
         
         # Initialize reputation with this data
         stp.info("Initializing Ollama reputation...")
-        for _, row in data.iterrows():
+        for _, row in tqdm(data.iterrows(), total=len(data), desc="Initializing reputation"):
             text = row[0]
             true_class = "ai" if row[1] == 1 else "human"
             

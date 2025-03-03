@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from autogen_core import MessageContext, BaseAgent
 import os
 from src.reputation import Reputation
+from tqdm import tqdm
 
 class TextDataset(Dataset):
     def __init__(self, encodings: BatchEncoding, labels: list):
@@ -110,8 +111,11 @@ class Bert(BaseAgent):
         self.model.to(self.device)   # type: ignore
         
         # Initialize reputation with this data
+        data: pd.DataFrame = pd.read_csv(DATASET)
+        data["generated"] = data["generated"].astype(int)
+        data = data.head(100)  # Only keep first 100 rows
         stp.info("Initializing BERT reputation...")
-        for _, row in data.iterrows():
+        for _, row in tqdm(data.iterrows(), total=len(data), desc="Initializing reputation"):
             text = row[0]
             true_class = "ai" if row[1] == 1 else "human"
             

@@ -25,7 +25,7 @@ class PresidentAgent(BaseAgent):
         if message.origin == "Main":
             stp.debug(f"President Received message from '{message.origin}', content: '{str(message.content)[:25]}'")
         else:
-            stp.info(f"President Received message from '{message.origin}', content: '{str(message.content)[:25]}'")
+            stp.info(f"President Received message from '{message.origin}', content: '{str(message.content)}'")
 
         dico_labels: dict[str, str] = {"0": "human", "1" : "AI"}
 
