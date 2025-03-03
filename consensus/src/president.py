@@ -15,6 +15,9 @@ class PresidentAgent(BaseAgent):
         self.msg: Message = Message(origin=self.__class__.__name__)
         self.is_voting: bool = False
         self.responses: dict[str, Any] = {}
+        self.agent_reputations: dict[str, dict[str, float]] = {}  # Agent -> {class -> reputation}
+        self.phase: str = "none"  # Paxos phases: none, propose, vote
+        self.candidates: dict[str, tuple[str, float]] = {}  # Agent -> (class, accuracy)
 
     async def on_message_impl(self, message: Message, ctx: MessageContext) -> None:
         """ Receive a message and process it """
@@ -108,6 +111,69 @@ class PresidentAgent(BaseAgent):
 
 
             elif data_dict.get("request") == "paxos":
-                pass
+                # Phase 1: Collect proposals from agents
+                if not self.is_voting:
+                    self.is_voting = True
+                    self.phase = "propose"
+                    self.responses = {x: None for x in self.agents}
+                    self.candidates = {}
+
+                    # Send request to all agents
+                    self.msg.content = message.content
+                    self.msg.data = json.dumps({"request": "paxos", "phase": "propose"})
+                    for agt in self.agents:
+                        await self.send_message(self.msg, AgentId(agt, "default"))
+
+                # Phase 2: Collect votes after receiving all proposals
+                elif self.phase == "propose" and all(self.responses.values()):
+                    self.phase = "vote"
+                    
+                    # Process proposals and identify candidates
+                    for agent, response in self.responses.items():
+                        data = json.loads(response)
+                        if data["confidence"] > 0.5:  # Only consider confident predictions
+                            self.candidates[agent] = (data["class"], data["confidence"])
+                    
+                    # Send candidates to all agents for voting
+                    self.responses = {x: None for x in self.agents}
+                    self.msg.data = json.dumps({
+                        "request": "paxos",
+                        "phase": "vote",
+                        "candidates": self.candidates
+                    })
+                    for agt in self.agents:
+                        await self.send_message(self.msg, AgentId(agt, "default"))
+
+                # Phase 3: Process votes and make final decision
+                elif self.phase == "vote" and all(self.responses.values()):
+                    self.is_voting = False
+                    self.phase = "none"
+                    
+                    # Count votes for each candidate
+                    vote_counts: dict[str, int] = {}
+                    for vote in self.responses.values():
+                        voted_agent = json.loads(vote)["voted_for"]
+                        if voted_agent in self.candidates:
+                            vote_counts[voted_agent] = vote_counts.get(voted_agent, 0) + 1
+                    
+                    # Find winner
+                    if vote_counts:
+                        winner = max(vote_counts.items(), key=lambda x: x[1])[0]
+                        winning_class = self.candidates[winner][0]
+                        stp.info(f"Paxos voting finished, winner: {winner} with class {winning_class}")
+                        
+                        # Update reputations based on consensus
+                        for agent in self.agents:
+                            if agent not in self.agent_reputations:
+                                self.agent_reputations[agent] = {"human": 0.0, "ai": 0.0}
+                            if agent in self.candidates:
+                                agent_class = self.candidates[agent][0]
+                                is_correct = agent_class == winning_class
+                                current_rep = self.agent_reputations[agent].get(agent_class, 0.0)
+                                self.agent_reputations[agent][agent_class] = (
+                                    current_rep + 1 if is_correct else current_rep - 0.1
+                                )
+                    else:
+                        stp.info("Paxos voting finished with no consensus")
 
 

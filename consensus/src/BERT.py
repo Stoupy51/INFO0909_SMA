@@ -41,7 +41,7 @@ class Bert(BaseAgent):
             with stp.Muffle(mute_stderr=True):
                 # Chargement du dataset
                 data: pd.DataFrame = pd.read_csv(DATASET)
-                data["label"] = data["label"].astype(int)
+                data["generated"] = data["generated"].astype(int)
                 data = data.iloc[:1000] # Trop long donc on test avec moins de lignes
 
                 # Séparer les données en train/test
@@ -65,7 +65,7 @@ class Bert(BaseAgent):
 
                 self.model: BertForSequenceClassification = BertForSequenceClassification.from_pretrained(
                     "bert-base-uncased",
-                    num_labels=len(set(data["label"])),
+                    num_labels=len(set(data["generated"])),
                     use_auth_token=False
                 )
 
@@ -166,6 +166,42 @@ class Bert(BaseAgent):
             
         elif data.get("request") == "borda":
             self.msg.content = self.predict_borda(content)
+
+        elif data.get("request") == "paxos":
+            phase = data.get("phase")
+            
+            # Phase 1: Make a proposal with confidence
+            if phase == "propose":
+                # Use the model to predict
+                with stp.Muffle():
+                    inputs: BatchEncoding = self.tokenizer(content, return_tensors="pt", truncation=True, padding=True, max_length=512)
+                    moved_inputs: dict[str, torch.Tensor] = {key: val.to(self.device) for key, val in inputs.items()}
+                    
+                    with torch.no_grad():
+                        outputs = self.model(**moved_inputs)
+                    
+                    # Get probabilities using softmax
+                    probabilities: torch.Tensor = torch.nn.functional.softmax(outputs.logits, dim=1)[0]
+                    
+                    # Determine class with highest probability
+                    classes: list[str] = ["human", "ai"]
+                    class_probs = [(class_name, float(prob)) for class_name, prob in zip(classes, probabilities)]
+                    predicted_class, confidence = max(class_probs, key=lambda x: x[1])
+                    
+                    # Send proposal with confidence
+                    self.msg.content = json.dumps({
+                        "class": predicted_class,
+                        "confidence": confidence
+                    })
+            
+            # Phase 2: Vote for a candidate
+            elif phase == "vote":
+                # Get candidates and vote for the one with highest confidence
+                candidates = data.get("candidates", {})
+                if candidates:
+                    # Simple strategy: vote for highest confidence candidate
+                    best_candidate = max(candidates.items(), key=lambda x: x[1][1])[0]
+                    self.msg.content = json.dumps({"voted_for": best_candidate})
 
         # Send back
         await self.send_message(self.msg, ctx.sender)    # type: ignore

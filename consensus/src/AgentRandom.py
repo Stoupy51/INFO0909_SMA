@@ -18,7 +18,8 @@ class AgentRandom(BaseAgent):
 
         # Prepare data for the model
         content: str = str(message.content)
-        vote: str = json.loads(message.data).get("request")
+        data: dict = json.loads(message.data)
+        vote: str = data.get("request")
 
         if vote == "majoritaire":
             decision: int = random.choice([1, 0])
@@ -33,6 +34,30 @@ class AgentRandom(BaseAgent):
                 text += candidat + " " + str(nb_points) + ","
                 nb_points -= 1
             self.msg.content = text
+            
+        elif vote == "paxos":
+            phase = data.get("phase")
+            
+            # Phase 1: Make a random proposal with random confidence
+            if phase == "propose":
+                # Randomly choose a class with a random confidence level
+                predicted_class = random.choice(["human", "ai"])
+                confidence = random.uniform(0.5, 1.0)  # Random confidence between 0.5 and 1.0
+                
+                # Send proposal with confidence
+                self.msg.content = json.dumps({
+                    "class": predicted_class,
+                    "confidence": confidence
+                })
+            
+            # Phase 2: Vote for a candidate
+            elif phase == "vote":
+                # Get candidates and vote randomly for one
+                candidates = data.get("candidates", {})
+                if candidates:
+                    # Random voting strategy
+                    voted_for = random.choice(list(candidates.keys()))
+                    self.msg.content = json.dumps({"voted_for": voted_for})
 
         # Send back
         await self.send_message(self.msg, ctx.sender)    # type: ignore
